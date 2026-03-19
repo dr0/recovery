@@ -7,85 +7,32 @@ All files are encrypted — no sensitive information is exposed in plaintext.
 
 | File | Contents | Passphrase |
 |------|----------|------------|
-| `passwords.txt.age` | All credentials, SSH key, recovery instructions | A — memorized by owner |
-| `home-recovery.tar.gz.age` | HOME docs, break-glass, scripts, threat-response | B — in server.conf AGE_PASSPHRASE_DOCS |
-| `zap-recovery.tar.gz.age` | ZAP docs, break-glass, scripts, threat-response | B — in server.conf AGE_PASSPHRASE_DOCS |
+| `passwords.txt.enc` | All credentials, SSH key, recovery instructions | A — memorized by owner |
+| `home-recovery.tar.gz.enc` | HOME docs, break-glass, scripts, threat-response | B — in server.conf OPENSSL_DOCS_PASSPHRASE |
+| `zap-recovery.tar.gz.enc` | ZAP docs, break-glass, scripts, threat-response | B — in server.conf OPENSSL_DOCS_PASSPHRASE |
 
 ## To decrypt documentation and break-glass (Passphrase B)
 
-Install age on any machine:
+openssl is pre-installed on Linux and macOS. On Windows use Git Bash.
 ```bash
-sudo apt install age   # Linux
-brew install age       # macOS
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in home-recovery.tar.gz.enc | tar -xzf -
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in zap-recovery.tar.gz.enc | tar -xzf -
 ```
 
-Decrypt:
-```bash
-age -d home-recovery.tar.gz.age | tar -xzf -
-age -d zap-recovery.tar.gz.age | tar -xzf -
-```
-
-Passphrase B is stored in `server.conf` as `AGE_PASSPHRASE_DOCS` on both servers.
-If servers are unavailable, get Passphrase B from `passwords.txt.age` (see below).
+Passphrase B is stored in `server.conf` as `OPENSSL_DOCS_PASSPHRASE` on both servers.
+If servers are unavailable, get Passphrase B from `passwords.txt.enc` (see below).
 
 ## To decrypt credentials (Passphrase A)
 ```bash
-age -d passwords.txt.age
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in passwords.txt.enc
 ```
 
 Passphrase A is memorized by the server owner only.
-Contact owner or use memorized passphrase.
 
 ## Recovery chain if everything is lost
 
-1. Download `passwords.txt.age` from this repo (no login needed — public repo)
-2. `age -d passwords.txt.age` → enter Passphrase A (memorized)
-3. Get SSH private key + Passphrase B from decrypted file
-4. `age -d home-recovery.tar.gz.age | tar -xzf -` → enter Passphrase B
-5. Read `break-glass-home.txt` for step-by-step server access and restore
-EOFcat > ~/maintenance/recovery/README.md << 'EOF'
-# Recovery Repository
-
-This repository contains encrypted recovery files for dr0's servers.
-All files are encrypted — no sensitive information is exposed in plaintext.
-
-## Files
-
-| File | Contents | Passphrase |
-|------|----------|------------|
-| `passwords.txt.age` | All credentials, SSH key, recovery instructions | A — memorized by owner |
-| `home-recovery.tar.gz.age` | HOME docs, break-glass, scripts, threat-response | B — in server.conf AGE_PASSPHRASE_DOCS |
-| `zap-recovery.tar.gz.age` | ZAP docs, break-glass, scripts, threat-response | B — in server.conf AGE_PASSPHRASE_DOCS |
-
-## To decrypt documentation and break-glass (Passphrase B)
-
-Install age on any machine:
-```bash
-sudo apt install age   # Linux
-brew install age       # macOS
-```
-
-Decrypt:
-```bash
-age -d home-recovery.tar.gz.age | tar -xzf -
-age -d zap-recovery.tar.gz.age | tar -xzf -
-```
-
-Passphrase B is stored in `server.conf` as `AGE_PASSPHRASE_DOCS` on both servers.
-If servers are unavailable, get Passphrase B from `passwords.txt.age` (see below).
-
-## To decrypt credentials (Passphrase A)
-```bash
-age -d passwords.txt.age
-```
-
-Passphrase A is memorized by the server owner only.
-Contact owner or use memorized passphrase.
-
-## Recovery chain if everything is lost
-
-1. Download `passwords.txt.age` from this repo (no login needed — public repo)
-2. `age -d passwords.txt.age` → enter Passphrase A (memorized)
-3. Get SSH private key + Passphrase B from decrypted file
-4. `age -d home-recovery.tar.gz.age | tar -xzf -` → enter Passphrase B
+1. Download `passwords.txt.enc` from this repo (no login needed — public repo)
+2. `openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in passwords.txt.enc` → enter Passphrase A (memorized)
+3. Get Passphrase B from decrypted file
+4. `openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in home-recovery.tar.gz.enc | tar -xzf -` → enter Passphrase B
 5. Read `break-glass-home.txt` for step-by-step server access and restore
