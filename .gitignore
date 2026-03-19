@@ -1,0 +1,11 @@
+passwords.txt
+*.txt
+!README.md
+EOFcat > /c/KITS/CLOUDs-configs/dr0-recovery/.gitignore << 'EOF'
+passwords.txt
+*.txt
+!README.md
+EOFcat > /c/KITS/CLOUDs-configs/dr0-recovery/.gitignore << 'EOF'
+passwords.txt
+*.txt
+!README.md
